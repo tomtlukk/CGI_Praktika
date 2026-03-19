@@ -1,0 +1,27 @@
+### GET all tables
+GET http://localhost:8080/api/tables
+
+### POST new table
+POST http://localhost:8080/api/tables
+Content-Type: application/json
+
+{
+    "tableId": 2,
+    "tableSize": 4,
+    "isReserved": true,
+    "occupiedUntil": "2026-03-19T21:47:34.4603065"
+  }
+
+### PUT new table
+PUT http://localhost:8080/api/tables/2
+Content-Type: application/json
+
+{
+  "tableId": 2,
+  "tableSize": 99,
+  "isReserved": true,
+  "occupiedUntil": "2026-03-19T21:47:34.4603065"
+}
+
+### DELETE table by ID
+DELETE http://localhost:8080/api/tables/2
