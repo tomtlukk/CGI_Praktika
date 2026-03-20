@@ -2,6 +2,7 @@ package com.example.cgi_praktika.controller;
 
 import com.example.cgi_praktika.model.Table;
 import com.example.cgi_praktika.repository.TableCollectionRepository;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -14,25 +15,25 @@ public class TableController {
 
     private final TableCollectionRepository repository;
 
-    public TableController(TableCollectionRepository contentCollectionRepository) {
-        this.repository = contentCollectionRepository;
+    public TableController(TableCollectionRepository TableCollectionRepository) {
+        this.repository = TableCollectionRepository;
     }
 
     @GetMapping("")
     public List<Table> findAll(){
-        return repository.findAllTables();
+        return repository.getAll();
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("")
-    public void createTable(@RequestBody Table table){
+    public void createTable(@Valid @RequestBody Table table){
         repository.createTable(table);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("/{id}")
-    public void updateTable(@RequestBody Table table, @PathVariable int id){
-        if (repository.findTableById(id).isEmpty()){
+    public void updateTable(@Valid @RequestBody Table table, @PathVariable int id){
+        if (repository.getTableById(id).isEmpty()){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Table not found");
         }
         repository.saveTable(table);
@@ -40,7 +41,7 @@ public class TableController {
 
     @DeleteMapping("/{id}")
     public void deleteTable(@PathVariable int id){
-        if (repository.findTableById(id).isEmpty()){
+        if (repository.getTableById(id).isEmpty()){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Table not found");
         }
         repository.deleteTableById(id);

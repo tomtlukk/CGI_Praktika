@@ -2,39 +2,58 @@ package com.example.cgi_praktika.repository;
 
 import com.example.cgi_praktika.model.Table;
 import jakarta.annotation.PostConstruct;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 public class TableCollectionRepository {
-    private final List<Table> tableList = new ArrayList<>();
 
-    public TableCollectionRepository() {}
+    private final JdbcTemplate jdbcTemplate;
 
-    public List<Table> findAllTables() {
-        return tableList;
+    public TableCollectionRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Optional<Table> findTableById(Integer id) {
-        return tableList.stream().filter(c -> c.tableId().equals(id)).findFirst();
+    private static Table mapRow(ResultSet rs, int rowNum) throws SQLException {
+        return new Table(rs.getInt("tableId"),
+                rs.getInt("tableCapacity"),
+                rs.getString("tablePreferences"),
+                rs.getString("tablePreferences"),
+                rs.getInt("startingPosX"),
+                rs.getInt("startingPosY"),
+                rs.getInt("tableWidth"));
     }
 
+    public List<Table> getAll() {
+        String sql = "SELECT * FROM restaurant_tables";
+        return jdbcTemplate.query(sql, TableCollectionRepository::mapRow);
+    }
+
+    // RESTAURANT tables
     public void createTable(Table table) {
-        tableList.add(table);
+        String sql = "INSERT INTO restaurant_tables (tableId, tableCapacity, tableZone, tablePreferences, startingPosX, startingPosY, tableWidth) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        jdbcTemplate.update(sql, table.tableId(), table.tableCapacity(), table.tableZone(), table.tablePreferences(), table.startingPosX(), table.startingPosY(), table.tableWidth());
     }
 
     public void saveTable(Table table) {
-        // Removes old table data (PUT request)
-        tableList.removeIf(c -> c.tableId().equals(table.tableId()));
-        tableList.add(table);
+        String sql = "UPDATE restaurant_tables SET tableCapacity=?, tableZone=?, tablePreferences=?, startingPosX=?, startingPosY=?, tableWidth=? WHERE tableId=?";
+        jdbcTemplate.update(sql, table.tableCapacity(), table.tableZone(), table.tablePreferences(), table.startingPosX(), table.startingPosY(), table.tableWidth(), table.tableId());
     }
 
     public void deleteTableById(int id) {
-        tableList.removeIf(c -> c.tableId().equals(id));
+        String sql = "DELETE FROM restaurant_tables WHERE tableId=?";
+        jdbcTemplate.update(sql, id);
+    }
+
+    public Optional<Table> getTableById(int id) {
+        String sql = "SELECT * FROM restaurant_tables WHERE tableId=?";
+        Table table = jdbcTemplate.queryForObject(sql, new Object[]{id}, TableCollectionRepository::mapRow);
+        return Optional.ofNullable(table);
     }
 
     @PostConstruct
@@ -42,8 +61,16 @@ public class TableCollectionRepository {
         Table c = new Table(
                 1,
                 1,
-                true,
-                LocalDateTime.now());
-        tableList.add(c);
+                "inside",
+                "window",
+                5,
+                5,
+                1
+        );
+
+        if (getTableById(c.tableId()).isEmpty()) {
+            createTable(c);
+        }
+
     }
 }
