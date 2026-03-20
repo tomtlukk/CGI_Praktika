@@ -2,6 +2,7 @@ package com.example.cgi_praktika.repository;
 
 import com.example.cgi_praktika.model.Table;
 import jakarta.annotation.PostConstruct;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -50,16 +51,21 @@ public class TableCollectionRepository {
         jdbcTemplate.update(sql, id);
     }
 
+    @SuppressWarnings("deprecation")
     public Optional<Table> getTableById(int id) {
         String sql = "SELECT * FROM restaurant_tables WHERE tableId=?";
+        try {
         Table table = jdbcTemplate.queryForObject(sql, new Object[]{id}, TableCollectionRepository::mapRow);
         return Optional.ofNullable(table);
+    } catch (EmptyResultDataAccessException ex) {
+            return Optional.empty();
+        }
     }
 
     @PostConstruct
     public void init() {
         Table c = new Table(
-                1,
+                5,
                 1,
                 "inside",
                 "window",
