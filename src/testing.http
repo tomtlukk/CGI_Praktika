@@ -6,11 +6,14 @@ POST http://localhost:8080/api/tables
 Content-Type: application/json
 
 {
-    "tableId": 2,
-    "tableSize": 4,
-    "isReserved": true,
-    "occupiedUntil": "2026-03-19T21:47:34.4603065"
-  }
+  "tableId": 2,
+  "tableCapacity": 99,
+  "tableZone": "private",
+  "tablePreferences": "window",
+  "startingPosX": 1,
+  "startingPosY": 2,
+  "tableWidth": 55
+}
 
 ### PUT new table
 PUT http://localhost:8080/api/tables/2
@@ -18,10 +21,49 @@ Content-Type: application/json
 
 {
   "tableId": 2,
-  "tableSize": 99,
-  "isReserved": true,
-  "occupiedUntil": "2026-03-19T21:47:34.4603065"
+  "tableCapacity": 101,
+  "tableZone": "private",
+  "tablePreferences": "window",
+  "startingPosX": 55,
+  "startingPosY": 2,
+  "tableWidth": 55
 }
 
 ### DELETE table by ID
 DELETE http://localhost:8080/api/tables/2
+
+
+
+### GET all reservations
+GET http://localhost:8080/api/reservations
+
+### POST new reservations
+POST http://localhost:8080/api/reservations
+Content-Type: application/json
+
+{
+  "tableId": 2,
+  "tableCapacity": 99,
+  "tableZone": "private",
+  "tablePreferences": "window",
+  "startingPosX": 1,
+  "startingPosY": 2,
+  "tableWidth": 55
+}
+
+### PUT new reservation
+PUT http://localhost:8080/api/reservations/2
+Content-Type: application/json
+
+{
+  "tableId": 2,
+  "tableCapacity": 101,
+  "tableZone": "private",
+  "tablePreferences": "window",
+  "startingPosX": 55,
+  "startingPosY": 2,
+  "tableWidth": 55
+}
+
+### DELETE reservation by ID
+DELETE http://localhost:8080/api/reservations/2
