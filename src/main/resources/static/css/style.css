@@ -1,0 +1,45 @@
+html, body {
+    margin: 0;
+    height: 100%;
+    align-items: center;
+
+}
+.container {
+    display:flex;
+    justify-content: center;
+    width: 100%;
+    height: 78.125rem;
+}
+
+.restaurant-layout-container {
+    width: 62.5rem;
+    height: 62.5rem;
+    border: black 1px ridge;
+
+}
+
+.grid-container {
+    height: 100%;
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    grid-template-rows: repeat(10, 1fr);
+}
+
+.grid-square {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: black 1px solid;
+}
+
+.table-1 {
+    grid-column: span 1;
+    grid-row: span 1;
+}
+
+
+.option-menu {
+    width: 15%;
+    border: black 1px ridge;
+    height: 62.5rem;
+}
