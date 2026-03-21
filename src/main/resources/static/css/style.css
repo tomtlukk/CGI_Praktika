@@ -43,3 +43,23 @@ html, body {
     border: black 1px ridge;
     height: 62.5rem;
 }
+
+
+.option {
+
+}
+
+.datetime-option {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 auto;
+}
+
+.datetime-selection {
+    width: 50%;
+}
+.selection {
+    display: block;
+    margin: 0 auto;
+    width: 90%
+}

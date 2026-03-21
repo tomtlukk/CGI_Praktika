@@ -17,21 +17,51 @@
     <!--div to hold the options-->
     <div class="option-menu">
         <p>restaurant option zone</p>
-        <div class="option">OPTION 1 - CUSTOMER COUNT</div>
+        <div class="option"># of people</div>
         <div class="option">
+            <p>Seating location</p>
             <select class="selection">
                 <option value="outside">Inside</option>
                 <option value="inside">Outside</option>
                 <option value="private">Private</option>
             </select>
-            OPTION 2 - PREFERENCES</div>
+        </div>
 
-        <div class="option">OPTION 3 - ZONE
+        <div class="option">
+            <p>Seating preferences</p>
             <select class="selection">
-                <option value="outside">Inside</option>
-                <option value="inside">Outside</option>
-                <option value="private">Private</option>
+                <option value="outside"></option>
+                <option value="outside">Window</option>
+                <option value="inside">Sofa</option>
+                <option value="private">Chairs</option>
+                <option value="private">Round table</option>
+
             </select>
+        </div>
+
+
+
+
+
+        <div class="option">
+            <p>Datetime selection</p>
+            <div class="datetime-option">
+            <!--2 divs, one for date and one for time-->
+                <div class="datetime-selection">
+                    <select class="selection" id="date-selection">
+                        <option value="outside">DATE</option>
+                        <option value="inside">DATE</option>
+                        <option value="private">DATE</option>
+                    </select>
+                </div>
+                <div class="datetime-selection">
+                    <select class="selection" id="time-selection">
+                        <option value="outside">TIME</option>
+                        <option value="inside">TIME</option>
+                        <option value="private">TIME</option>
+                    </select>
+                </div>
+            </div>
         </div>
 
 
