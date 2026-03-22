@@ -40,7 +40,6 @@ function checkTableOverlap(newTable, tableArray) {
     return false;
 }
 
-// todo add logic to check if table is reserved or ineligible for selection
 function selectTable(event) {
 
     // don't let user select table if it's reserved or doesn't match preferences
@@ -79,19 +78,15 @@ function getReservationData() {
     return {selectedDateTime: date, clientCount: clientCountElement.value, seatingLocation: seatingLocationElement.value, clientPreferences: clientPreferencesElement.value}
 }
 
-function suggestTable() {
-    getReservationData();
-    // todo filter all tables for criteria, then filter for reservations on leftover tables
-}
 
 // generic method to check if a table is reserved at current selected time
-function isTableReserved(tableId, reservationData) {
+function isTableReserved(tableId) {
 
     const userReservationData = getReservationData();
     const newFrom = new Date(userReservationData.selectedDateTime.getTime());
     const newUntil = new Date(newFrom.getTime() + 2 * 60 * 60 * 1000);
 
-    const hasConflict = reservationData.some(reservation => {
+    const hasConflict = reservations.some(reservation => {
         if (reservation.tableId !== tableId) return false;
         const resFrom = new Date(reservation.reservationFrom);
         const resUntil = new Date(reservation.reservationUntil);
@@ -104,8 +99,25 @@ function isTableReserved(tableId, reservationData) {
     return hasConflict;
 }
 
+// All tables that fit criteria
 function eligibleTables() {
-    // todo logic for preferences
+    const optionData = getReservationData();
+
+    tables.forEach(table => {
+
+        let flag = false;
+        // table already reserved, doesn't matter if it counts
+        if (isTableReserved(table.tableId)) return;
+        // reset the table eligibility
+        const tableElement = document.getElementById(table.tableId);
+        tableElement.classList.remove("table-ineligible");
+
+        if (!(table.tableZone === optionData.seatingLocation) && optionData.seatingLocation !== "none") flag = true;
+        if (!(table.tablePreferences === optionData.clientPreferences) && optionData.clientPreferences !== "none") flag = true;
+        if ((table.tableCapacity < optionData.clientCount)) flag = true;
+        if (flag) tableElement.classList.add("table-ineligible");
+        flag = false;
+    })
 }
 
 function refreshTables() {
@@ -116,6 +128,7 @@ function refreshTables() {
             tableElement.classList.add("table-reserved")
         }
     })
+    eligibleTables();
 }
 
 function populateTimeSelection() {
@@ -296,7 +309,7 @@ async function init() {
     // todo run reserved table logic once here
 
     tables.forEach(table => {
-            if (isTableReserved(table.tableId, reservations)) {
+            if (isTableReserved(table.tableId)) {
                 console.log(table.tableId);
                 const tableElement = document.getElementById(table.tableId);
                 tableElement.classList.add("table-reserved");
@@ -307,6 +320,7 @@ async function init() {
     )
 
 }
+
 const clientCountOption = document.getElementById("client-count")
 const locationOption = document.getElementById("seating-location");
 const preferenceOption = document.getElementById("client-preferences");
@@ -314,29 +328,24 @@ const dateOption = document.getElementById("date-selection");
 const timeOption = document.getElementById("time-selection");
 
 clientCountOption.addEventListener("change", function() {
-    // todo remove reserved class from all tables before running reservation logic again
     refreshTables()
 })
 
 locationOption.addEventListener("change", function() {
-    // todo remove reserved class from all tables before running reservation logic again
     refreshTables()
 })
 
 preferenceOption.addEventListener("change", function() {
-    // todo remove reserved class from all tables before running reservation logic again
     refreshTables()
 })
 
 // Rerun reserved table logic every time one of the options is changed
 dateOption.addEventListener("change", function() {
-    // todo remove reserved class from all tables before running reservation logic again
     hidePastTimes();
     refreshTables();
 })
 
 timeOption.addEventListener("change", function() {
-    // todo remove reserved class from all tables before running reservation logic again
     refreshTables()
 })
 
