@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,13 +34,13 @@ public class ReservationCollectionRepository {
     }
 
     public void createReservation(Reservation reservation) {
-        String sql = "INSERT INTO reservations (reservationId, tableId, reservationFrom, reservationUntil) VALUES (?, ?, ?, ?)";
-        jdbcTemplate.update(sql, reservation.reservationId(), reservation.tableId(), reservation.reservationFrom(), reservation.reservationUntil());
+        String sql = "INSERT INTO reservations (tableId, reservationFrom, reservationUntil) VALUES (?, ?, ?)";
+        jdbcTemplate.update(sql, reservation.tableId(), reservation.reservationFrom(), reservation.reservationUntil());
     }
 
     public void saveReservation(Reservation reservation) {
         String sql = "UPDATE reservations SET tableId=?, reservationFrom=?, reservationUntil=? WHERE reservationId=?";
-        jdbcTemplate.update(sql, reservation.tableId(), reservation.reservationFrom(), reservation.reservationUntil(), reservation.tableId());
+        jdbcTemplate.update(sql, reservation.tableId(), reservation.reservationFrom(), reservation.reservationUntil());
     }
 
     public void deleteReservationById(int id) {
@@ -63,15 +62,15 @@ public class ReservationCollectionRepository {
 
     @PostConstruct
     public void init() {
-        Reservation r = new Reservation(
-                1,
-                1,
-                LocalDateTime.now(),
-                LocalDateTime.now()
-        );
-
-        if (getReservationById(r.reservationId()).isEmpty()) {
-            createReservation(r);
-        }
+//        Reservation r = new Reservation(
+//                5,
+//                1,
+//                LocalDateTime.now(),
+//                LocalDateTime.now()
+//        );
+//
+//        if (getReservationById(r.reservationId()).isEmpty()) {
+//            createReservation(r);
+//        }
     }
 }
