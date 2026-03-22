@@ -11,12 +11,12 @@ CREATE TABLE IF NOT EXISTS restaurant_tables (
     tableLength INTEGER,
     PRIMARY KEY (tableId)
 );
-/* DROP TABLE IF EXISTS reservations; */
+-- DROP TABLE IF EXISTS reservations;
 
 CREATE TABLE IF NOT EXISTS reservations (
     reservationId INTEGER AUTO_INCREMENT,
     tableId INTEGER,
     reservationFrom TIMESTAMP,
     reservationUntil TIMESTAMP,
-    primary key (tableId)
+    primary key (reservationId)
     );
