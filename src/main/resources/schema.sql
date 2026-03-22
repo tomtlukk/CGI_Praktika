@@ -1,5 +1,3 @@
--- DROP TABLE IF EXISTS restaurant_tables;
-
 CREATE TABLE IF NOT EXISTS restaurant_tables (
     tableId INTEGER AUTO_INCREMENT,
     tableCapacity INTEGER,
