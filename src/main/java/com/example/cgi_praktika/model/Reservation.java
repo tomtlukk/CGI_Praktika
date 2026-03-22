@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 public record Reservation(
-        @NotNull
         Integer reservationId,
         @NotNull
         Integer tableId,
