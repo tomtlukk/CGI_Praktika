@@ -42,6 +42,8 @@ function checkTableOverlap(newTable, tableArray) {
 
 function selectTable(event) {
 
+    const reserveButton = document.getElementById("reserve-button");
+    reserveButton.disabled = false;
     // don't let user select table if it's reserved or doesn't match preferences
     if (event.currentTarget.classList.contains("table-reserved")) return;
     if (event.currentTarget.classList.contains("table-ineligible")) return;
@@ -116,6 +118,9 @@ function eligibleTables() {
         if (!(table.tablePreferences === optionData.clientPreferences) && optionData.clientPreferences !== "none") flag = true;
         if ((table.tableCapacity < optionData.clientCount)) flag = true;
         if (flag) tableElement.classList.add("table-ineligible");
+
+        //todo add check to make sure client count is not smaller than tableCap-2 (?)
+
         flag = false;
     })
 }
@@ -124,15 +129,16 @@ function refreshTables() {
     tables.forEach(table => {
         const tableElement = document.getElementById(table.tableId)
         tableElement.classList.remove("table-reserved")
-        if (isTableReserved(table.tableId, reservations)) {
+        if (isTableReserved(table.tableId)) {
             tableElement.classList.add("table-reserved")
         }
     })
     eligibleTables();
+    // prevent bugs by just unselecting selected table
+    unselectTable();
 }
 
 function populateTimeSelection() {
-    // todo add logic for skipping times that are past present time on first day
     const el = document.getElementById("time-selection");
     for (let hour = 10; hour <= 22; hour++) {
 
@@ -222,7 +228,9 @@ function unselectTable() {
     if (el != null) {
         el.classList.remove("table-selected")
     }
-    // todo disable the reserve button
+    selectedTableId = null;
+    const reserveButton = document.getElementById("reserve-button");
+    reserveButton.disabled = true;
 }
 
 function reserveTable() {
@@ -233,6 +241,7 @@ function reserveTable() {
     const data = getReservationData();
     const from = new Date(data.selectedDateTime.getTime() + 2 * 60 * 60 * 1000); // +3 hours to sync timezone todo reasonable fix
     const until = new Date(from.getTime() + 2 * 60 * 59 * 1000); // slightly under 2 hours so it is freed up for the next time slot
+
     fetch("http://localhost:8080/api/reservations", {
         method: "POST",
         headers: {
@@ -244,7 +253,11 @@ function reserveTable() {
             reservationUntil: until
         })
     });
-    // todo fix table not turning into reserved-table clientside after being reserved until page is refreshed
+
+    refreshTables();
+    alert("Table successfully reserved!");
+    // very ugly bugfix todo improve
+    window.location.href = window.location.href;
 }
 
 // populate grid with tables
@@ -308,16 +321,7 @@ async function init() {
 
     // todo run reserved table logic once here
 
-    tables.forEach(table => {
-            if (isTableReserved(table.tableId)) {
-                console.log(table.tableId);
-                const tableElement = document.getElementById(table.tableId);
-                tableElement.classList.add("table-reserved");
-            }
-
-        }
-
-    )
+    refreshTables();
 
 }
 
