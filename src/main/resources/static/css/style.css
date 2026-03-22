@@ -21,8 +21,7 @@ html, body {
     width: 62.5rem;
     height: 62.5rem;
     border: black 1px ridge;
-    background-image: url("../img/basic-outline.png")
-
+    background-image: url("../img/basic-outline.png");
 }
 
 .grid-container {
@@ -67,6 +66,10 @@ html, body {
     border-radius: 0.25rem;
 }
 
+.round {
+    border-radius: 100%;
+}
+
 .table-reserved {
     background: #1B211A
     repeating-linear-gradient(
@@ -87,6 +90,10 @@ html, body {
             gray 20px,
             gray 40px
     );
+}
+
+.table-eligible {
+    /*todo*/
 }
 .table-selected {
     background: #1B211A
