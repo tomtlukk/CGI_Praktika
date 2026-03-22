@@ -1,5 +1,5 @@
-let lastClickedTableId = null;
-
+let selectedTableId = null;
+let reservations = null;
 function isOutOfBounds(table) {
     if (table.startingPosY < 2 || table.startingPosY > 9 || table.startingPosX < 2 || table.startingPosX > 9) {
         console.error(`Table ${table.tableId} starts out of bounds!`);
@@ -15,7 +15,7 @@ function isOutOfBounds(table) {
 }
 
 // Function made by Copilot
-function isOverlap(tableA, tableB) {
+function doesTableOverlap(tableA, tableB) {
     const aLeft = tableA.startingPosX;
     const aRight = tableA.startingPosX + tableA.tableWidth - 1;
     const aTop = tableA.startingPosY;
@@ -33,7 +33,7 @@ function checkTableOverlap(newTable, tableArray) {
     for (const table of tableArray) {
         if (newTable.tableId === table.tableId) continue;
 
-        if (isOverlap(newTable, table)) return true;
+        if (doesTableOverlap(newTable, table)) return true;
     }
     return false;
 }
@@ -42,21 +42,63 @@ function selectTable(event) {
     console.log(`Table with ID ${event.currentTarget.id} clicked!`);
     event.currentTarget.classList.add("table-selected");
 
-    if (lastClickedTableId) {
-        unselectTable(lastClickedTableId)
+    if (selectedTableId) {
+        unselectTable(selectedTableId)
     }
 
     // Table already gets unselected, setting last table ID to null to prevent stuff
-    if (lastClickedTableId === event.currentTarget.id) {
-        lastClickedTableId = null;
+    if (selectedTableId === event.currentTarget.id) {
+        selectedTableId = null;
         return;
     }
 
-    lastClickedTableId = event.currentTarget.id;
+    selectedTableId = event.currentTarget.id;
 }
 
-function isTableReserved() {
+function getReservationData() {
 
+    // todo
+    const dateElement = document.getElementById("date-selection");
+    const timeElement = document.getElementById("time-selection");
+    const clientCountElement = document.getElementById("client-count");
+    const seatingLocationElement = document.getElementById("seating-location");
+    const clientPreferencesElement = document.getElementById("client-preferences")
+    
+    //combine datetime into date object
+    let [year, month, day] = dateElement.value.split("-");
+    let [hour, minute] = timeElement.value.split(":");
+
+    const date = new Date(year, month, day, hour, minute)
+    console.log(date);
+    console.log(seatingLocationElement.value)
+    console.log(clientCountElement.value)
+
+    return {selectedDateTime: date, clientCount: clientCountElement.value, seatingLocation: seatingLocationElement.value, clientPreferences: clientPreferencesElement.value}
+}
+
+function suggestTable() {
+    getReservationData();
+    // todo filter all tables for criteria, then filter for reservations on leftover tables
+}
+
+// generic method to check if a table is reserved at current selected time
+function isTableReserved(tableId, reservationData) {
+
+    const userReservationData = getReservationData();
+
+    const newFrom = userReservationData.selectedDateTime;
+    const newUntil = new Date(newFrom.getTime() + 2 * 60 * 60 * 1000);
+
+    const hasConflict = reservationData.some(reservation => {
+        if (reservation.tableId !== tableId) return false;
+
+        return (
+            newFrom < reservation.reservationUntil &&
+            newUntil > reservation.reservationFrom
+        );
+
+    });
+    // todo add reserved class to all reserved tables, make sure the other tables don't have the class if unreserved
 }
 
 function populateTimeSelection() {
@@ -64,8 +106,12 @@ function populateTimeSelection() {
     for (let hour = 10; hour < 22; hour++) {
         for (let minute = 0; minute < 60; minute+=30) {
             const option = document.createElement("option");
+            let cleanedMinutes = minute;
+            if (minute === 0) {
+                cleanedMinutes += "0";
+            }
 
-            let timeString = `${hour}:${minute}`
+            let timeString = `${hour}:${cleanedMinutes}`
             option.value = timeString;
             option.text = timeString;
 
@@ -95,29 +141,37 @@ function populateDateSelection() {
     }
 }
 
-function selectedDate() {
-    const el = document.getElementById("date-selection");
-    return el.value;
-}
+function doesTimeOverlap() {
 
-function selectedTime() {
-    const el = document.getElementById("time-selection");
-    return el.value;
 }
-
 function unselectTable() {
-    const el = document.querySelector(`.table[id="${lastClickedTableId}"]`)
+    const el = document.querySelector(`.table[id="${selectedTableId}"]`)
     if (el != null) {
         el.classList.remove("table-selected")
     }
-
+    // todo disable the reserve button
 }
 
 function reserveTable() {
-    if (lastClickedTableId == null) {
+    if (selectedTableId === null) {
         console.warn("User tried reserving a table without selecting one.")
         return;
     }
+    const data = getReservationData();
+    const from = new Date(data.selectedDateTime.getTime() + 3 * 60 * 60 * 1000); // +3 hours to sync timezone todo reasonable fix
+    const until = new Date(from.getTime() + 2 * 60 * 59 * 1000); // slightly under 2 hours so it is freed up for the next time slot
+    fetch("http://localhost:8080/api/reservations", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            tableId: selectedTableId,
+            reservationFrom: from,
+            reservationUntil: until
+        })
+    });
+
     // todo POST request with selected time, +2hr and tableId
 }
 
@@ -142,11 +196,14 @@ function loadTables(data) {
         tablePositionElement.style.gridRow = `${table.startingPosY} / span ${table.tableLength}`; // todo add tableLength to Table record, db schema and repository (simplifies logic)
 
         // Table div
+        // todo add check for round table
         const tableDiv = document.createElement("div");
         tableDiv.classList.add("table")
         tableDiv.addEventListener("click", selectTable)
         tableDiv.id = table.tableId;
-
+        if (table.tablePreferences === "round") {
+            tableDiv.classList.add("round");
+        }
 
         // Table seat count div
         const maxOccupancyDiv = document.createElement("div");
@@ -165,9 +222,14 @@ function loadTables(data) {
     });
 }
 
+fetch("http://localhost:8080/api/reservations")
+    .then(res => res.json())
+    .then(data => console.log(data))
+
 fetch("http://localhost:8080/api/tables")
     .then(res => res.json())
     .then(data => loadTables(data));
 
 populateDateSelection();
 populateTimeSelection();
+getReservationData();
