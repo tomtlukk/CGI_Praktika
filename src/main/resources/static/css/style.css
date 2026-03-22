@@ -47,7 +47,7 @@ html, body {
     border: black 1px ridge;
     height: 62.5rem;
 }
-.option-menu h1 {
+h1 {
     display: flex;
     justify-content: center;
     align-items:center;
