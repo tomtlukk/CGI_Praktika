@@ -80,7 +80,6 @@ function getReservationData() {
     return {selectedDateTime: date, clientCount: clientCountElement.value, seatingLocation: seatingLocationElement.value, clientPreferences: clientPreferencesElement.value}
 }
 
-
 // generic method to check if a table is reserved at current selected time
 function isTableReserved(tableId) {
 
@@ -279,7 +278,7 @@ function loadTables(data) {
 
         // Position + size
         tablePositionElement.style.gridColumn = `${table.startingPosX} / span ${table.tableWidth}`;
-        tablePositionElement.style.gridRow = `${table.startingPosY} / span ${table.tableLength}`; // todo add tableLength to Table record, db schema and repository (simplifies logic)
+        tablePositionElement.style.gridRow = `${table.startingPosY} / span ${table.tableLength}`;
 
         // Table div
         const tableDiv = document.createElement("div");
@@ -318,9 +317,6 @@ async function init() {
 
     populateDateSelection();
     populateTimeSelection();
-
-    // todo run reserved table logic once here
-
     refreshTables();
 
 }
