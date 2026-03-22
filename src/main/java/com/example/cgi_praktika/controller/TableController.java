@@ -31,9 +31,9 @@ public class TableController {
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PutMapping("/{id}")
-    public void updateTable(@Valid @RequestBody Table table, @PathVariable int id){
-        if (repository.getTableById(id).isEmpty()){
+    @PutMapping("")
+    public void updateTable(@Valid @RequestBody Table table){
+        if (repository.getTableById(table.tableId()).isEmpty()){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Table not found");
         }
         repository.saveTable(table);
