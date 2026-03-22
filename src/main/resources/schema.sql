@@ -1,4 +1,4 @@
-/*DROP TABLE IF EXISTS restaurant_tables; */
+-- DROP TABLE IF EXISTS restaurant_tables;
 
 CREATE TABLE IF NOT EXISTS restaurant_tables (
     tableId INTEGER AUTO_INCREMENT,
@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS restaurant_tables (
     startingPosX INTEGER,
     startingPosY INTEGER,
     tableWidth INTEGER,
+    tableLength INTEGER,
     PRIMARY KEY (tableId)
 );
 /* DROP TABLE IF EXISTS reservations; */
