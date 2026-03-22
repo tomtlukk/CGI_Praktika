@@ -23,7 +23,7 @@ public class TableCollectionRepository {
     private static Table mapRow(ResultSet rs, int rowNum) throws SQLException {
         return new Table(rs.getInt("tableId"),
                 rs.getInt("tableCapacity"),
-                rs.getString("tablePreferences"),
+                rs.getString("tableZone"),
                 rs.getString("tablePreferences"),
                 rs.getInt("startingPosX"),
                 rs.getInt("startingPosY"),
@@ -39,10 +39,9 @@ public class TableCollectionRepository {
 
     // RESTAURANT tables
     public void createTable(Table table) {
-        if (getTableById(table.tableId()).isEmpty()) {
-            String sql = "INSERT INTO restaurant_tables (tableId, tableCapacity, tableZone, tablePreferences, startingPosX, startingPosY, tableWidth, tableLength) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-            jdbcTemplate.update(sql, table.tableId(), table.tableCapacity(), table.tableZone(), table.tablePreferences(), table.startingPosX(), table.startingPosY(), table.tableWidth(), table.tableLength());
-        }
+            String sql = "INSERT INTO restaurant_tables (tableCapacity, tableZone, tablePreferences, startingPosX, startingPosY, tableWidth, tableLength) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            jdbcTemplate.update(sql, table.tableCapacity(), table.tableZone(), table.tablePreferences(), table.startingPosX(), table.startingPosY(), table.tableWidth(), table.tableLength());
+
         }
 
     public void saveTable(Table table) {
@@ -68,20 +67,21 @@ public class TableCollectionRepository {
 
     @PostConstruct
     public void init() {
-        Table c = new Table(
-                5,
-                1,
-                "inside",
-                "window",
-                5,
-                5,
-                1,
-                1
-        );
-
-        if (getTableById(c.tableId()).isEmpty()) {
-            createTable(c);
-        }
-
-    }
+//        Table c = new Table(
+//                5,
+//                1,
+//                "inside",
+//                "window",
+//                5,
+//                5,
+//                1,
+//                1
+//        );
+//
+//        if (getTableById(c.tableId()).isEmpty()) {
+//            createTable(c);
+//        }
+//
+//    }
+}
 }
