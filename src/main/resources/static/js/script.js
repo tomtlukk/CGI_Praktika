@@ -1,5 +1,7 @@
 let selectedTableId = null;
 let reservations = null;
+let tables = null;
+
 function isOutOfBounds(table) {
     if (table.startingPosY < 2 || table.startingPosY > 9 || table.startingPosX < 2 || table.startingPosX > 9) {
         console.error(`Table ${table.tableId} starts out of bounds!`);
@@ -38,7 +40,12 @@ function checkTableOverlap(newTable, tableArray) {
     return false;
 }
 
+// todo add logic to check if table is reserved or ineligible for selection
 function selectTable(event) {
+
+    // don't let user select table if it's reserved
+    if (event.currentTarget.classList.contains("table-reserved")) return;
+
     console.log(`Table with ID ${event.currentTarget.id} clicked!`);
     event.currentTarget.classList.add("table-selected");
 
@@ -56,8 +63,6 @@ function selectTable(event) {
 }
 
 function getReservationData() {
-
-    // todo
     const dateElement = document.getElementById("date-selection");
     const timeElement = document.getElementById("time-selection");
     const clientCountElement = document.getElementById("client-count");
@@ -68,10 +73,7 @@ function getReservationData() {
     let [year, month, day] = dateElement.value.split("-");
     let [hour, minute] = timeElement.value.split(":");
 
-    const date = new Date(year, month, day, hour, minute)
-    console.log(date);
-    console.log(seatingLocationElement.value)
-    console.log(clientCountElement.value)
+    const date = new Date(year, month-1, day, hour, minute)
 
     return {selectedDateTime: date, clientCount: clientCountElement.value, seatingLocation: seatingLocationElement.value, clientPreferences: clientPreferencesElement.value}
 }
@@ -85,23 +87,29 @@ function suggestTable() {
 function isTableReserved(tableId, reservationData) {
 
     const userReservationData = getReservationData();
-
-    const newFrom = userReservationData.selectedDateTime;
+    const newFrom = new Date(userReservationData.selectedDateTime.getTime());
     const newUntil = new Date(newFrom.getTime() + 2 * 60 * 60 * 1000);
 
     const hasConflict = reservationData.some(reservation => {
         if (reservation.tableId !== tableId) return false;
-
+        const resFrom = new Date(reservation.reservationFrom);
+        const resUntil = new Date(reservation.reservationUntil);
         return (
-            newFrom < reservation.reservationUntil &&
-            newUntil > reservation.reservationFrom
+            newFrom < resUntil &&
+            newUntil > resFrom
         );
 
     });
-    // todo add reserved class to all reserved tables, make sure the other tables don't have the class if unreserved
+    return hasConflict;
 }
 
+function eligibleTable() {
+    // todo logic for preferences
+}
+
+
 function populateTimeSelection() {
+    // todo add logic for skipping times that are past present time on first day
     const el = document.getElementById("time-selection");
     for (let hour = 10; hour < 22; hour++) {
         for (let minute = 0; minute < 60; minute+=30) {
@@ -141,9 +149,6 @@ function populateDateSelection() {
     }
 }
 
-function doesTimeOverlap() {
-
-}
 function unselectTable() {
     const el = document.querySelector(`.table[id="${selectedTableId}"]`)
     if (el != null) {
@@ -179,6 +184,7 @@ function reserveTable() {
 function loadTables(data) {
 
     const grid = document.getElementById("grid-container");
+    tables = data;
 
     data.forEach(table => {
         // todo prevent invalid tables from being accepted by controller
@@ -196,7 +202,6 @@ function loadTables(data) {
         tablePositionElement.style.gridRow = `${table.startingPosY} / span ${table.tableLength}`; // todo add tableLength to Table record, db schema and repository (simplifies logic)
 
         // Table div
-        // todo add check for round table
         const tableDiv = document.createElement("div");
         tableDiv.classList.add("table")
         tableDiv.addEventListener("click", selectTable)
@@ -222,14 +227,40 @@ function loadTables(data) {
     });
 }
 
-fetch("http://localhost:8080/api/reservations")
-    .then(res => res.json())
-    .then(data => console.log(data))
+async function init() {
+    const resReservations = await fetch("http://localhost:8080/api/reservations");
+    reservations = await resReservations.json();
 
-fetch("http://localhost:8080/api/tables")
-    .then(res => res.json())
-    .then(data => loadTables(data));
+    const resTables = await fetch("http://localhost:8080/api/tables");
+    tables = await resTables.json();
 
-populateDateSelection();
-populateTimeSelection();
-getReservationData();
+    loadTables(tables);
+
+    populateDateSelection();
+    populateTimeSelection();
+
+    // todo run reserved table logic once here
+    const optionData = getReservationData();
+    tables.forEach(table => {
+            if (isTableReserved(table.tableId, reservations)) {
+                console.log(table.tableId);
+                const tableElement = document.getElementById(table.tableId);
+                tableElement.classList.add("table-reserved");
+            }
+
+        }
+
+    )
+
+}
+
+const locationOption = document.getElementById("seating-location");
+
+// Rerun reserved table logic every time one of the options is changed
+locationOption.addEventListener("change", function() {
+    // get all current options
+    let data = getReservationData();
+
+})
+
+init();
