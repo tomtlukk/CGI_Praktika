@@ -139,7 +139,7 @@ function refreshTables() {
 
 function populateTimeSelection() {
     const el = document.getElementById("time-selection");
-    for (let hour = 10; hour <= 22; hour++) {
+    for (let hour = 10; hour < 22; hour++) {
 
         for (let minute = 0; minute < 60; minute+=30) {
             const option = document.createElement("option");
