@@ -18,7 +18,9 @@ public record Table(
         @NotNull
         Integer startingPosY,
         @NotNull
-        Integer tableWidth
+        Integer tableWidth,
+        @NotNull
+        Integer tableLength
 ) {
 }
 

@@ -27,7 +27,9 @@ public class TableCollectionRepository {
                 rs.getString("tablePreferences"),
                 rs.getInt("startingPosX"),
                 rs.getInt("startingPosY"),
-                rs.getInt("tableWidth"));
+                rs.getInt("tableWidth"),
+                rs.getInt("tableLength")
+        );
     }
 
     public List<Table> getAll() {
@@ -37,13 +39,15 @@ public class TableCollectionRepository {
 
     // RESTAURANT tables
     public void createTable(Table table) {
-        String sql = "INSERT INTO restaurant_tables (tableId, tableCapacity, tableZone, tablePreferences, startingPosX, startingPosY, tableWidth) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sql, table.tableId(), table.tableCapacity(), table.tableZone(), table.tablePreferences(), table.startingPosX(), table.startingPosY(), table.tableWidth());
-    }
+        if (getTableById(table.tableId()).isEmpty()) {
+            String sql = "INSERT INTO restaurant_tables (tableId, tableCapacity, tableZone, tablePreferences, startingPosX, startingPosY, tableWidth, tableLength) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            jdbcTemplate.update(sql, table.tableId(), table.tableCapacity(), table.tableZone(), table.tablePreferences(), table.startingPosX(), table.startingPosY(), table.tableWidth(), table.tableLength());
+        }
+        }
 
     public void saveTable(Table table) {
-        String sql = "UPDATE restaurant_tables SET tableCapacity=?, tableZone=?, tablePreferences=?, startingPosX=?, startingPosY=?, tableWidth=? WHERE tableId=?";
-        jdbcTemplate.update(sql, table.tableCapacity(), table.tableZone(), table.tablePreferences(), table.startingPosX(), table.startingPosY(), table.tableWidth(), table.tableId());
+        String sql = "UPDATE restaurant_tables SET tableCapacity=?, tableZone=?, tablePreferences=?, startingPosX=?, startingPosY=?, tableWidth=?, tableLength=? WHERE tableId=?";
+        jdbcTemplate.update(sql, table.tableCapacity(), table.tableZone(), table.tablePreferences(), table.startingPosX(), table.startingPosY(), table.tableWidth(), table.tableLength(), table.tableId());
     }
 
     public void deleteTableById(int id) {
@@ -71,6 +75,7 @@ public class TableCollectionRepository {
                 "window",
                 5,
                 5,
+                1,
                 1
         );
 
