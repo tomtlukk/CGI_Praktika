@@ -11,6 +11,17 @@
     <div class="restaurant-layout-container">
         <!--Grid layout of restaurant tables-->
         <div class="grid-container" id="grid-container">
+            <div class="grid-legend">
+<!--                todo implement-->
+<!--                Additional info-->
+<!--                <div>-->
+<!--                </div>-->
+<!--                <div>-->
+<!--                </div>-->
+<!--                <div>-->
+<!--                </div>-->
+            </div>
+
         </div>
 
     </div>
@@ -20,25 +31,24 @@
         <div class="option">
             <!--todo implement-->
             <p># of people</p>
-            <input class="selection" id="client-count"></input>
+            <input type="number" class="selection" id="client-count" value="1" min="1" max="6"></input>
         </div>
         <div class="option">
-            <p>Seating location</p>
+            <p>Seating location preference</p>
             <select class="selection" id="seating-location">
-                <option value="outside">Inside</option>
-                <option value="inside">Outside</option>
-                <option value="private">Private</option>
+                <option value="none">None</option>
+                <option value="inside">Inside</option>
+                <option value="outside">Outside</option>
             </select>
         </div>
 
         <div class="option">
             <p>Seating preferences</p>
             <select class="selection" id="client-preferences">
-                <option value="default">None</option>
+                <option value="none">None</option>
                 <option value="window">Window</option>
                 <option value="sofa">Sofa</option>
-                <option value="chairs">Chairs</option>
-                <option value="roundtable">Round table</option>
+                <option value="round">Round table</option>
 
             </select>
         </div>
@@ -59,7 +69,7 @@
             </div>
         </div>
         <div class="option">
-            <button class="reserve-button" onclick="reserveTable()">
+            <button class="reserve-button" id="reserve-button" onclick="reserveTable()" disabled>
                 <span>Reserve table</span>
             </button>
         </div>
