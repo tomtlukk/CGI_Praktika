@@ -238,7 +238,7 @@ function reserveTable() {
         return;
     }
     const data = getReservationData();
-    const from = new Date(data.selectedDateTime.getTime() + 2 * 60 * 60 * 1000); // +3 hours to sync timezone todo reasonable fix
+    const from = new Date(data.selectedDateTime.getTime() + 3 * 60 * 60 * 1000); // +3 hours to sync timezone todo reasonable fix
     const until = new Date(from.getTime() + 2 * 60 * 59 * 1000); // slightly under 2 hours so it is freed up for the next time slot
 
     fetch("http://localhost:8080/api/reservations", {
