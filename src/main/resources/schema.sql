@@ -9,7 +9,8 @@ CREATE TABLE IF NOT EXISTS restaurant_tables (
     tableLength INTEGER,
     PRIMARY KEY (tableId)
 );
--- DROP TABLE IF EXISTS reservations;
+-- Remake the reservations every time
+DROP TABLE IF EXISTS reservations;
 
 CREATE TABLE IF NOT EXISTS reservations (
     reservationId INTEGER AUTO_INCREMENT,
